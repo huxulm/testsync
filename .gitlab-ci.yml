@@ -1,7 +1,7 @@
 sync_from_upstream:
   image: alpine:latest
   script:
-    - apk add git
+    - apk add git openssh-client
     - git remote add upstream git@github.com:huxulm/testsync.git
     - git fetch upstream
     - git checkout master
