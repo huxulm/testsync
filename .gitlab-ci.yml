@@ -1,0 +1,12 @@
+sync_from_upstream:
+  image: alpine:latest
+  script:
+    - apk add git
+    - git remote add upstream https://github.com
+    - git fetch upstream
+    - git checkout master
+    - git merge upstream/master
+    - git push origin master
+  only:
+    - schedules  # 仅在定时触发时运行
+    - manual # 允许手动触发
