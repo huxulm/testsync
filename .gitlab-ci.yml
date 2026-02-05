@@ -7,6 +7,7 @@ sync_from_upstream:
     - git checkout master
     - git merge upstream/master
     - git push origin master
-  only:
-    - schedules  # 仅在定时触发时运行
-    - manual # 允许手动触发
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"  # 定时触发
+    - if: $CI_PIPELINE_SOURCE == "web"       # 在页面点击 Run pipeline 时触发
+    - when: manual
