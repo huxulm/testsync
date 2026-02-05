@@ -2,7 +2,7 @@ sync_from_upstream:
   image: alpine:latest
   script:
     - apk add git
-    - git remote add upstream https://github.com
+    - git remote add upstream git@github.com:huxulm/testsync.git
     - git fetch upstream
     - git checkout master
     - git merge upstream/master
