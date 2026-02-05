@@ -1,14 +1,30 @@
 variables:
   HOME: /builds
+
+default:
+  before_script:
+    # 消除默认分支名提示
+    - git config --global init.defaultBranch main
+
 sync_from_upstream:
-  image: alpine:latest
+  image: cr.xao.ac.cn/xao/alpine-cicd:v0.0.3
+  before_script:
+    - git config --global user.email "ci-bot@gitlab.com"
+    - git config --global user.name "CI Bot"
+    - git config --global init.defaultBranch main
   script:
-    - apk add git openssh-client
-    - git remote add upstream git@github.com:huxulm/testsync.git
+    # 1. 强制设置 origin 为带 Token 的地址，确保有推送权限 (使用 PUSH_TOKEN)
+    - git remote set-url origin https://oauth2:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+    # 2. 添加并获取 upstream
+    - git remote add upstream https://github.com/huxulm/testsync.git
     - git fetch upstream
-    - git checkout master
-    - git merge upstream/master
-    - git push origin master
+    - git fetch origin
+    # 3. 明确基于 origin/main 创建本地 main 分支，解决歧义
+    - git checkout -B main origin/main
+    # 4. 合并 GitHub 的更新
+    - git merge upstream/main --no-edit
+    # 5. 推送回 GitLab
+    - git push origin main
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"  # 定时触发
     - if: $CI_PIPELINE_SOURCE == "web"       # 在页面点击 Run pipeline 时触发
